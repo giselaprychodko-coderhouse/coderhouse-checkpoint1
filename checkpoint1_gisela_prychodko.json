@@ -1,0 +1,324 @@
+{
+  "name": "checkpoint1 - Agente de Triaje de Soporte",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "[ROL Y ÁMBITO]\nSos un Agente de Triaje de Soporte Técnico para una empresa SaaS B2B. Tu único ámbito es interpretar mensajes desestructurados de usuarios, identificar el problema principal, clasificar la prioridad y registrar un ticket limpio para que el equipo de soporte pueda actuar.\n\nNO tenés autorización para: prometer tiempos de resolución, cerrar tickets, otorgar compensaciones, modificar datos productivos, borrar registros, ejecutar acciones destructivas, brindar asesoramiento legal o comprometer decisiones comerciales.\n\n[OBJETIVO OPERATIVO]\nConvertir cada consulta entrante en un registro estructurado con: nombre del usuario, contacto, empresa, categoría del problema, prioridad, resumen del caso y próxima acción recomendada.\n\n[REGLAS DE USO DE HERRAMIENTAS]\n- Usá la herramienta \"Registrar_Ticket_Soporte\" SOLO cuando tengas datos mínimos suficientes: contacto del usuario, categoría del problema y descripción del inconveniente.\n- Si falta un dato clave, hacé una única pregunta clara antes de registrar.\n- No inventes información. Si un dato no fue provisto, dejalo vacío o marcá \"No informado\".\n- Clasificá la prioridad como Alta, Media o Baja. Alta aplica si hay bloqueo total, impacto en facturación, caída de servicio, pérdida de datos o cliente estratégico.\n- Si el mensaje mezcla varios problemas, priorizá el problema de mayor impacto y dejá el resto en notas.\n\n[PROTOCOLO DE ESCALAMIENTO / GUARDRAILS]\n- Si el usuario reporta pérdida de datos, caída generalizada, incidente de seguridad, cliente VIP o amenaza de baja, marcá prioridad Alta y recomendá revisión humana inmediata.\n- Si el usuario pide una acción destructiva o sensible, detené el ciclo y respondé: \"El caso requiere revisión humana antes de ejecutar acciones sensibles.\"\n- No envíes correos ni mensajes externos al cliente final. Solo registrá el ticket y generá un resumen operativo.\n\n[ESTILO]\n- Escribí en español rioplatense estándar, claro y profesional.\n- No uses lenguaje inclusivo con terminaciones en -e, -x o @.\n- Sé breve, específico y orientado a la operación.",
+          "maxIterations": 8
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        240,
+        0
+      ],
+      "id": "c66a8491-e0e7-45d3-8743-718d2d3d9ba3",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        160,
+        224
+      ],
+      "id": "8e5dcf32-65f3-41e2-91e7-f36507bd07a2",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "97UdAXbA21P5mViZ",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -48,
+        0
+      ],
+      "id": "27680bc9-a52c-463a-ac3a-a721e849dce8",
+      "name": "Telegram Trigger",
+      "webhookId": "f8d9f53a-86bb-47c0-8c0a-33e639147812",
+      "credentials": {
+        "telegramApi": {
+          "id": "uPQwmiZwpCUg8tf9",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Registra UN ticket nuevo de soporte técnico como una fila en la planilla del equipo de soporte. Usala SOLO cuando ya tenés como mínimo: contacto del usuario (correo o teléfono), categoría del problema y descripción del inconveniente. NO la uses si falta alguno de esos datos: en ese caso primero preguntale al usuario. NO sirve para consultar, modificar ni cerrar tickets existentes.",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1c8Mg_M4dXBo418rnZE1clLQ36OKt-3pjI1iQ7B3pj4E",
+          "mode": "list",
+          "cachedResultName": "CODERHOUSE N.A TP 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1c8Mg_M4dXBo418rnZE1clLQ36OKt-3pjI1iQ7B3pj4E/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Hoja 1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "schema": [
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "Fecha",
+              "id": "Fecha",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "Nombre",
+              "id": "Nombre",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "Contacto",
+              "id": "Contacto",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "Empresa",
+              "id": "Empresa",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "Categoria",
+              "id": "Categoria",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "Prioridad",
+              "id": "Prioridad",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "Resumen",
+              "id": "Resumen",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "Proxima_Accion",
+              "id": "Proxima_Accion",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "Notas",
+              "id": "Notas",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "value": {
+            "Categoria": "={{ $fromAI('Categoria', 'Categoría del problema: Acceso, Facturación, Funcionalidad, Rendimiento, Seguridad u Otro', 'string') }}",
+            "Contacto": "={{ $fromAI('Contacto', 'Correo o teléfono de contacto del usuario', 'string') }}",
+            "Empresa": "={{ $fromAI('Empresa', 'Empresa del usuario. Si no la dio, No informado', 'string') }}",
+            "Fecha": "={{ $now.setZone('America/Argentina/Buenos_Aires').toFormat('dd/LL/yyyy HH:mm') }}",
+            "Nombre": "={{ $fromAI('Nombre', 'Nombre del usuario que reporta. Si no lo dio, No informado', 'string') }}",
+            "Notas": "={{ $fromAI('Notas', 'Problemas secundarios u observaciones. Vacío si no hay', 'string') }}",
+            "Prioridad": "={{ $fromAI('Prioridad', 'Alta, Media o Baja según las reglas del system message', 'string') }}",
+            "Proxima_Accion": "={{ $fromAI('Proxima_Accion', 'Próxima acción recomendada para el equipo de soporte', 'string') }}",
+            "Resumen": "={{ $fromAI('Resumen', 'Resumen breve y claro del problema principal', 'string') }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "6833bba0-9a24-4b54-aabf-4b3740593f5e",
+      "name": "Registrar_Ticket_Soporte",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        400,
+        224
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eUnok5QNfPGFkyfU",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=Reporte de observación - Agente de Triaje de Soporte:\n\n{{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "0e356109-2243-439a-b0f6-1d36fae48355",
+      "name": "Telegram - Respuesta",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        624,
+        0
+      ],
+      "webhookId": "653019e8-4cc9-4b36-9562-738216f60bb0",
+      "credentials": {
+        "telegramApi": {
+          "id": "uPQwmiZwpCUg8tf9",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "giselaprychodko@gmail.com",
+        "subject": "=Agente de Triaje: nueva consulta procesada ({{ $now.setZone('America/Argentina/Buenos_Aires').toFormat('dd/LL/yyyy HH:mm') }})",
+        "emailType": "text",
+        "message": "=Reporte de ejecución del Agente de Triaje de Soporte\n\nUsuario de Telegram: {{ $('Telegram Trigger').item.json.message.from.first_name }} {{ $('Telegram Trigger').item.json.message.from.last_name || '' }}\n\nMensaje recibido:\n{{ $('Telegram Trigger').item.json.message.text }}\n\nRespuesta del agente:\n{{ $('AI Agent').item.json.output }}\n\nEjecución n.º {{ $execution.id }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "36bd1497-93f1-4727-b4a6-ca7901037790",
+      "name": "Notificar a Soporte por Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        864,
+        0
+      ],
+      "webhookId": "98abbea5-d3ff-4cbe-85a0-cb44cd099826",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "dZ30Mq4cW4mgVtcU",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Telegram - Respuesta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar_Ticket_Soporte": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram - Respuesta": {
+      "main": [
+        [
+          {
+            "node": "Notificar a Soporte por Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true,
+    "timezone": "America/Argentina/Buenos_Aires"
+  },
+  "versionId": "738a4c44-e2ad-4a7b-ad35-7b28b6054bdc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "instanceId": "6d338406efdb8c2d3587fe8628c38743a590ae0ff34e3b9b7443b0e05251f9b5"
+  },
+  "nodeGroups": [],
+  "id": "YqWvpbFaphb5nBwn",
+  "tags": []
+}
